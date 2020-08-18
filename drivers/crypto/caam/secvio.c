@@ -45,6 +45,8 @@ static const u8 *snvs_ssm_state_name[] = {
 	"secure",
 };
 
+extern void tamper_detect_handler(void);
+
 /* Top-level security violation interrupt */
 static irqreturn_t snvs_secvio_interrupt(int irq, void *snvsdev)
 {
@@ -52,6 +54,10 @@ static irqreturn_t snvs_secvio_interrupt(int irq, void *snvsdev)
 	struct snvs_secvio_drv_private *svpriv = dev_get_drvdata(dev);
 
 	clk_enable(svpriv->clk);
+
+       if (rd_reg32(&svpriv->svregs->hp.secvio_status) & 0x80000000)
+               tamper_detect_handler();
+
 	/* Check the HP secvio status register */
 	svpriv->irqcause = rd_reg32(&svpriv->svregs->hp.secvio_status) &
 				    HP_SECVIOST_SECVIOMASK;

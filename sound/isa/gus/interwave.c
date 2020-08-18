@@ -362,7 +362,7 @@ static void snd_interwave_bank_sizes(struct snd_gus_card *gus, int *sizes)
 }
 
 struct rom_hdr {
-	/* 000 */ unsigned char iwave[8];
+	/* 000 */ unsigned char crux[8];
 	/* 008 */ unsigned char rom_hdr_revision;
 	/* 009 */ unsigned char series_number;
 	/* 010 */ unsigned char series_name[16];
@@ -390,7 +390,7 @@ static void snd_interwave_detect_memory(struct snd_gus_card *gus)
 	int bank_pos, pages;
 	unsigned int i, lmct;
 	int psizes[4];
-	unsigned char iwave[8];
+	unsigned char crux[8];
 	unsigned char csum;
 
 	snd_interwave_reset(gus);
@@ -441,8 +441,8 @@ static void snd_interwave_detect_memory(struct snd_gus_card *gus)
 	gus->gf1.rom_memory = 0;
 	for (bank_pos = 0; bank_pos < 16L * 1024L * 1024L; bank_pos += 4L * 1024L * 1024L) {
 		for (i = 0; i < 8; ++i)
-			iwave[i] = snd_gf1_peek(gus, bank_pos + i);
-		if (strncmp(iwave, "INTRWAVE", 8))
+			crux[i] = snd_gf1_peek(gus, bank_pos + i);
+		if (strncmp(crux, "INTRWAVE", 8))
 			continue;	/* first check */
 		csum = 0;
 		for (i = 0; i < sizeof(struct rom_hdr); i++)

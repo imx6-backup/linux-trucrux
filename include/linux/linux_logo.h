@@ -32,6 +32,9 @@ struct linux_logo {
 	const unsigned char *data;
 };
 
+/* Trux */
+extern const struct linux_logo logo_trux_ul_ull_clut224;
+
 extern const struct linux_logo logo_linux_mono;
 extern const struct linux_logo logo_linux_vga16;
 extern const struct linux_logo logo_linux_clut224;
