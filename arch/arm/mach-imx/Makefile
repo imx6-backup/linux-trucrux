@@ -112,7 +112,7 @@ AFLAGS_lpddr2_freq_imx6sx.o :=-Wa,-march=armv7-a
 obj-$(CONFIG_SOC_IMX6SX) += clk-imx6sx.o mach-imx6sx.o ddr3_freq_imx6sx.o \
 			    lpddr2_freq_imx6sx.o
 obj-$(CONFIG_SOC_IMX6UL) += clk-imx6ul.o mach-imx6ul.o ddr3_freq_imx6sx.o \
-			    lpddr2_freq_imx6sx.o
+			    lpddr2_freq_imx6sx.o mach-truxq01.o
 obj-$(CONFIG_SOC_IMX7D) += clk-imx7d.o mach-imx7d.o
 
 ifeq ($(CONFIG_SUSPEND),y)

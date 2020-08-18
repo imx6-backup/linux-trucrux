@@ -293,6 +293,12 @@ config GPIO_MXC
 	select GPIO_GENERIC
 	select GENERIC_IRQ_CHIP
 
+config TRUX_UNUSED_GPIO
+       tristate "Trux unused GPIO"
+       depends on OF_GPIO && SOC_IMX6UL && GPIO_MXC
+       help
+         Say yes here to set the unused GPIOs as input in TRUX-iMX6UL-Q01 platform.
+
 config GPIO_MXS
 	def_bool y
 	depends on ARCH_MXS

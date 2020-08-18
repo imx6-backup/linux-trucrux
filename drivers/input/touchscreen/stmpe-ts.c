@@ -63,6 +63,10 @@
 #define STMPE_TS_NAME			"stmpe-ts"
 #define XY_MASK				0xfff
 
+#ifdef CONFIG_SOC_IMX6UL
+#define STMPE_MIN_Y                    120
+#endif
+
 struct stmpe_touch {
 	struct stmpe *stmpe;
 	struct input_dev *idev;
@@ -123,6 +127,20 @@ static void stmpe_work(struct work_struct *work)
 	input_sync(ts->idev);
 }
 
+#ifdef CONFIG_SOC_IMX6UL 
+/* TRUXQ01: TOUCH: Fix for touch calibration */
+static void calibration_pointer(int *x_orig, int *y_orig)
+{
+        int  x, y;
+
+       x = *y_orig;
+       /*TRUXQ01: TOUCH:( 100 / 93 )  is the scalling factor*/
+        y = ( *x_orig - STMPE_MIN_Y) * 100 / 93;
+        *y_orig = y;
+        *x_orig = x;
+}
+#endif
+
 static irqreturn_t stmpe_ts_handler(int irq, void *data)
 {
 	u8 data_set[4];
@@ -149,6 +167,11 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	x = (data_set[0] << 4) | (data_set[1] >> 4);
 	y = ((data_set[1] & 0xf) << 8) | data_set[2];
 	z = data_set[3];
+
+#ifdef CONFIG_SOC_IMX6UL
+        /* TRUXQ01: TOUCH: Fix for touch calibration */
+       calibration_pointer(&x, &y);
+#endif
 
 	input_report_abs(ts->idev, ABS_X, x);
 	input_report_abs(ts->idev, ABS_Y, y);
