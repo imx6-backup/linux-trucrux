@@ -138,6 +138,19 @@ struct snvs_lp {
 	u32 pwr_glitch_det;	/* Power Glitch Detector */
 	u32 gen_purpose;
 	u32 zmk[8];		/* Zeroizable Master Key */
+        u32 reserved;
+        u32 gpr[4];             /* General Purpose Register */
+        u32 tamper_det_cfg2;    /* Tamper Detectors Configuration 2 */
+        u32 tamper_det_status;  /* Tamper Detectors Status */
+        u32 tamper_filt_cfg1;
+        u32 tamper_filt_cfg2;
+        u32 reserved2[4];
+        u32 active_cfg[5];
+        u32 reserved3[3];
+        u32 active_ctl;
+        u32 active_clk_ctl;
+        u32 active_rt_ctl1;
+        u32 active_rt_ctl2;
 };
 
 #define LP_LOCK_MKEYSEL_LCK	0x00000200

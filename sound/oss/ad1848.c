@@ -82,7 +82,7 @@ typedef struct
 #define MD_1845		4
 #define MD_4232		5
 #define MD_C930		6
-#define MD_IWAVE	7
+#define MD_TRUCRUX	7
 #define MD_4235         8 /* Crystal Audio CS4235  */
 #define MD_1845_SSCAPE  9 /* Ensoniq Soundscape PNP*/
 #define MD_4236		10 /* 4236 and higher */
@@ -167,7 +167,7 @@ static struct {
     ,{CAP_F_TIMER} /* MD_1845  */
     ,{CAP_F_TIMER} /* MD_4232  */
     ,{0}           /* MD_C930  */
-    ,{CAP_F_TIMER} /* MD_IWAVE */
+    ,{CAP_F_TIMER} /* MD_TRUCRUX */
     ,{0}           /* MD_4235  */
     ,{CAP_F_TIMER} /* MD_1845_SSCAPE */
 };
@@ -607,9 +607,9 @@ static void ad1848_mixer_reset(ad1848_info * devc)
 			devc->mix_devices = &(c930_mix_devices[0]);
 			break;
 
-		case MD_IWAVE:
+		case MD_TRUCRUX:
 			devc->supported_devices = MODE3_MIXER_DEVICES;
-			devc->mix_devices = &(iwave_mix_devices[0]);
+			devc->mix_devices = &(trucrux_mix_devices[0]);
 			break;
 
 		case MD_42xB:
@@ -1152,7 +1152,7 @@ static int ad1848_prepare_for_output(int dev, int bsize, int bcount)
 		tmp = ad_read(devc, 16);
 		ad_write(devc, 16, tmp | 0x30);
 	}
-	if (devc->model == MD_IWAVE)
+	if (devc->model == MD_TRUCRUX)
 		ad_write(devc, 17, 0xc2);	/* Disable variable frequency select */
 
 	ad_write(devc, 8, fs);
@@ -1219,7 +1219,7 @@ static int ad1848_prepare_for_input(int dev, int bsize, int bcount)
 		tmp = ad_read(devc, 16);
 		ad_write(devc, 16, tmp | 0x30);
 	}
-	if (devc->model == MD_IWAVE)
+	if (devc->model == MD_TRUCRUX)
 		ad_write(devc, 17, 0xc2);	/* Disable variable frequency select */
 
 	/*
@@ -1483,14 +1483,14 @@ static void ad1848_init_hw(ad1848_info * devc)
 		else 
 			ad_write(devc, 12, ad_read(devc, 12) | 0x40);		/* Mode2 = enabled */
 
-		if (devc->model == MD_IWAVE)
+		if (devc->model == MD_TRUCRUX)
 			ad_write(devc, 12, 0x6c);	/* Select codec mode 3 */
 
 		if (devc->model != MD_1845_SSCAPE)
 			for (i = 16; i < 32; i++)
 				ad_write(devc, i, init_values[i]);
 
-		if (devc->model == MD_IWAVE)
+		if (devc->model == MD_TRUCRUX)
 			ad_write(devc, 16, 0x30);	/* Playback and capture counters enabled */
 	}
 	if (devc->model > MD_1848)
@@ -1503,7 +1503,7 @@ static void ad1848_init_hw(ad1848_info * devc)
 		if (devc->model == MD_1845 || devc->model == MD_1845_SSCAPE)
 			ad_write(devc, 27, ad_read(devc, 27) | 0x08);		/* Alternate freq select enabled */
 
-		if (devc->model == MD_IWAVE)
+		if (devc->model == MD_TRUCRUX)
 		{		/* Some magic Interwave specific initialization */
 			ad_write(devc, 12, 0x6c);	/* Select codec mode 3 */
 			ad_write(devc, 16, 0x30);	/* Playback and capture counters enabled */
@@ -1795,8 +1795,8 @@ int ad1848_detect(struct resource *ports, int *ad_flags, int *osp)
 
 					if (interwave)
 					{
-						devc->model = MD_IWAVE;
-						devc->chip_name = "IWave";
+						devc->model = MD_TRUCRUX;
+						devc->chip_name = "Trucrux";
 					}
 					else if (ad_read(devc, 23) != tmp)	/* AD1845 ? */
 					{

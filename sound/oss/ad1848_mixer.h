@@ -123,7 +123,7 @@ static mixer_ents ad1848_mix_devices[32] = {
 	MIX_ENT(SOUND_MIXER_LINE3,	18, 1, 0, 5,	19, 1, 0, 5,  7)
 };
 
-static mixer_ents iwave_mix_devices[32] = {
+static mixer_ents trucrux_mix_devices[32] = {
 	MIX_ENT(SOUND_MIXER_VOLUME,	25, 1, 0, 5,	27, 1, 0, 5,  8),
 	MIX_ENT(SOUND_MIXER_BASS,	 0, 0, 0, 0,	 0, 0, 0, 0,  8),
 	MIX_ENT(SOUND_MIXER_TREBLE,	 0, 0, 0, 0,	 0, 0, 0, 0,  8),

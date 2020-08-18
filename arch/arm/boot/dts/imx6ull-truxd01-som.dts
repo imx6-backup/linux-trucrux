@@ -1,0 +1,62 @@
+/*
+ * Copyright (c) 2020 Trunexa Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "imx6ull-pinfunc.h"
+#include "imx6ull-pinfunc-snvs.h"
+#include "imx6ull.dtsi"
+#include "imx6-truxd01-som.dtsi"
+
+
+&iomuxc {
+	pinctrl-names = "default";
+	imx6ul-truxd01 {
+                pinctrl_uart5: uart5grp {
+                        fsl,pins = <
+                                MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX   0x1b0b1
+                                MX6ULL_PAD_UART5_RX_DATA__UART5_DCE_RX   0x1b0b1
+                                MX6UL_PAD_GPIO1_IO08__UART5_DCE_RTS    0x1b0b1
+                                MX6UL_PAD_GPIO1_IO09__UART5_DCE_CTS     0x1b0b1
+                        >;
+                };
+	};
+};
+
+&iomuxc_snvs {
+        pinctrl-names = "default_snvs";
+        pinctrl-0 = <&pinctrl_hog_2>;
+        imx6ul-truxd01 {
+                pinctrl_hog_2: hoggrp-2 {
+                        fsl,pins = <
+                                MX6ULL_PAD_SNVS_TAMPER0__GPIO5_IO00     0x80000000
+                                MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03      0x80000000
+                                MX6ULL_PAD_SNVS_TAMPER7__GPIO5_IO07      0x80000000
+                                MX6ULL_PAD_SNVS_TAMPER8__GPIO5_IO08      0x80000000
+                                MX6ULL_PAD_SNVS_TAMPER2__GPIO5_IO02      0x80000000
+                        >;
+                };
+
+
+
+        };
+};
+
+
+&uart5 {
+        pinctrl-0 = <&pinctrl_uart5>;
+};

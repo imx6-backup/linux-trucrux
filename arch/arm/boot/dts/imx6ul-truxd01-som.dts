@@ -1,0 +1,39 @@
+/*
+ * Copyright (c) 2020 Trunexa Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include "imx6ul.dtsi"
+#include "imx6-truxd01-som.dtsi"
+
+
+&iomuxc {
+	pinctrl-names = "default";
+	imx6ul-truxd01 {
+	pinctrl_uart5: uart5grp {
+		       fsl,pins = <
+			       MX6UL_PAD_UART5_TX_DATA__UART5_DCE_TX   0x1b0b1
+			       MX6UL_PAD_UART5_RX_DATA__UART5_DCE_RX   0x1b0b1
+			       MX6UL_PAD_GPIO1_IO08__UART5_DCE_RTS     0x1b0b1
+			       MX6UL_PAD_GPIO1_IO09__UART5_DCE_CTS     0x1b0b1
+			       >;
+	       };
+	};
+};
+&uart5 {
+	pinctrl-0 = <&pinctrl_uart5>;
+};

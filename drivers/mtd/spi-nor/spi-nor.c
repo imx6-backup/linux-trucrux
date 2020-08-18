@@ -26,6 +26,12 @@
 /* Define max times to check status register before we give up. */
 #define	MAX_READY_WAIT_JIFFIES	(40 * HZ) /* M25P16 specs 40s max chip erase */
 
+/* TRUXD01: SPI: Adding support for SST26VF016B */
+#ifdef CONFIG_SOC_IMX6UL
+#define SST_BLOCK_PROTECT	BIT(12)	/* use SST Unlock Block-Protection */
+#endif
+
+
 #define SPI_NOR_MAX_ID_LEN	6
 
 struct flash_info {
@@ -635,6 +641,11 @@ static const struct spi_device_id spi_nor_ids[] = {
 	{ "sst25vf040b", INFO(0xbf258d, 0, 64 * 1024,  8, SECT_4K | SST_WRITE) },
 	{ "sst25vf080b", INFO(0xbf258e, 0, 64 * 1024, 16, SECT_4K | SST_WRITE) },
 	{ "sst25vf016b", INFO(0xbf2541, 0, 64 * 1024, 32, SECT_4K | SST_WRITE) },
+/* TRUXD01: SPI: Adding support for SST26VF016B,IS25LP016D */
+#ifdef CONFIG_SOC_IMX6UL
+	{ "sst26vf016b", INFO(0xbf2641, 0, 64 * 1024, 32, SECT_4K | SST_BLOCK_PROTECT) },
+	{ "is25lp016d", INFO(0x9d6015, 0, 64 * 1024, 32, SECT_4K ) },
+#endif
 	{ "sst25vf032b", INFO(0xbf254a, 0, 64 * 1024, 64, SECT_4K | SST_WRITE) },
 	{ "sst25vf064c", INFO(0xbf254b, 0, 64 * 1024, 128, SECT_4K) },
 	{ "sst25wf512",  INFO(0xbf2501, 0, 64 * 1024,  1, SECT_4K | SST_WRITE) },
@@ -747,6 +758,18 @@ static int spi_nor_read(struct mtd_info *mtd, loff_t from, size_t len,
 	spi_nor_unlock_and_unprep(nor, SPI_NOR_OPS_READ);
 	return ret;
 }
+
+/* TRUXD01: SPI: Adding support for SST26VF016B */
+#ifdef CONFIG_SOC_IMX6UL
+static int sst_unlock_block_protection(struct spi_nor *nor)
+{
+	int ret;
+
+	ret = write_enable(nor);
+	return ret ? ret : nor->write_reg(nor, SPINOR_OP_ULBPR, nor->cmd_buf, 1, 0);
+}
+#endif
+
 
 static int sst_write(struct mtd_info *mtd, loff_t to, size_t len,
 		size_t *retlen, const u_char *buf)
@@ -1250,6 +1273,15 @@ int spi_nor_scan(struct spi_nor *nor, const char *name, enum read_mode mode)
 	}
 
 	nor->read_dummy = spi_nor_read_dummy_cycles(nor);
+/* TRUXD01: SPI: Adding support for SST26VF016B */
+#ifdef CONFIG_SOC_IMX6UL
+	if (info->flags & SST_BLOCK_PROTECT) {
+		ret = sst_unlock_block_protection(nor);
+		if (ret)
+			return ret;
+	}
+#endif
+
 
 	dev_info(dev, "%s (%lld Kbytes)\n", id->name,
 			(long long)mtd->size >> 10);

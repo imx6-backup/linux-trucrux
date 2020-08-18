@@ -27,6 +27,13 @@ config LOGO_LINUX_CLUT224
 	bool "Standard 224-color Linux logo"
 	default y
 
+config LOGO_TRUX_CLUT224
+        bool "Standard 224-color Trux logo"
+        depends on SOC_IMX6UL
+	depends on SOC_IMX6ULL
+        default y
+
+
 config LOGO_BLACKFIN_VGA16
 	bool "16-colour Blackfin Processor Linux logo"
 	depends on BLACKFIN
