@@ -37,3 +37,4 @@
 &uart5 {
 	pinctrl-0 = <&pinctrl_uart5>;
 };
+
