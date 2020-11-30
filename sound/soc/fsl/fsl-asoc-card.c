@@ -23,6 +23,8 @@
 
 #include "../codecs/sgtl5000.h"
 #include "../codecs/wm8962.h"
+#include "../codecs/wm8960.h"
+
 
 #define RX 0
 #define TX 1
@@ -139,6 +141,7 @@ static int fsl_asoc_card_hw_params(struct snd_pcm_substream *substream,
 	ret = snd_soc_dai_set_sysclk(rtd->cpu_dai, cpu_priv->sysclk_id[tx],
 				     cpu_priv->sysclk_freq[tx],
 				     cpu_priv->sysclk_dir[tx]);
+	dev_err(dev,"Trucrux log1\n");
 	if (ret) {
 		dev_err(dev, "failed to set sysclk for cpu dai\n");
 		return ret;
@@ -166,7 +169,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct fsl_asoc_card_priv *priv = snd_soc_card_get_drvdata(rtd->card);
 	struct snd_interval *rate;
 	struct snd_mask *mask;
-
+	dev_err(dev,"Trucrux log2\n");
 	rate = hw_param_interval(params, SNDRV_PCM_HW_PARAM_RATE);
 	rate->max = rate->min = priv->asrc_rate;
 
@@ -216,6 +219,8 @@ static int fsl_asoc_card_set_bias_level(struct snd_soc_card *card,
 	struct device *dev = card->dev;
 	unsigned int pll_out;
 	int ret;
+	
+	dev_err(dev,"Trucrux log3\n");
 
 	if (dapm->dev != codec_dai->dev)
 		return 0;
@@ -280,6 +285,7 @@ static int fsl_asoc_card_audmux_init(struct device_node *np,
 	int int_port, ext_port;
 	int ret;
 
+	dev_err(dev,"Trucrux log4\n");
 	ret = of_property_read_u32(np, "mux-int-port", &int_port);
 	if (ret) {
 		dev_err(dev, "mux-int-port missing or invalid\n");
@@ -388,6 +394,7 @@ static int fsl_asoc_card_late_probe(struct snd_soc_card *card)
 	struct device *dev = card->dev;
 	int ret;
 
+	dev_err(dev,"Trucrux log5\n");
 	ret = snd_soc_dai_set_sysclk(codec_dai, codec_priv->mclk_id,
 				     codec_priv->mclk_freq, SND_SOC_CLOCK_IN);
 	if (ret) {
@@ -410,6 +417,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 	u32 width;
 	int ret;
 
+	dev_err(dev,"Trucrux log6\n");
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -475,6 +483,14 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 		priv->codec_priv.fll_id = WM8962_SYSCLK_FLL;
 		priv->codec_priv.pll_id = WM8962_FLL;
 		priv->dai_fmt |= SND_SOC_DAIFMT_CBM_CFM;
+	} else if (of_device_is_compatible(np, "fsl,imx-audio-wm8960")) {
+		codec_dai_name = "wm8960-hifi";
+		priv->card.set_bias_level = fsl_asoc_card_set_bias_level;
+		priv->codec_priv.codec_type = FSL_CODEC_WM8960;
+		priv->codec_priv.fll_id = WM8960_SYSCLK_AUTO;
+		priv->codec_priv.pll_id = WM8960_SYSCLK_AUTO;
+		priv->dai_fmt |= SND_SOC_DAIFMT_CBM_CFM;
+		dev_err(dev,"Trucrux log7\n");
 	} else {
 		dev_err(&pdev->dev, "unknown Device Tree compatible\n");
 		return -EINVAL;
@@ -535,7 +551,8 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 		priv->dai_link[2].cpu_of_node = cpu_np;
 		priv->dai_link[2].dai_fmt = priv->dai_fmt;
 		priv->card.num_links = 3;
-
+		
+		dev_err(dev,"Trucrux log9\n");
 		ret = of_property_read_u32(asrc_np, "fsl,asrc-rate",
 					   &priv->asrc_rate);
 		if (ret) {
@@ -578,6 +595,8 @@ static const struct of_device_id fsl_asoc_card_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-cs42888", },
 	{ .compatible = "fsl,imx-audio-sgtl5000", },
 	{ .compatible = "fsl,imx-audio-wm8962", },
+	{ .compatible = "fsl,imx-audio-wm8960", },
+
 	{}
 };
 

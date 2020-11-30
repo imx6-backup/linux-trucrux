@@ -127,17 +127,36 @@
 	};*/
 	
 	sound {
-                compatible = "fsl,imx-audio-wm8960";
-                model = "wm8960-audio";
-                ssi-controller = <&sai2>;
-                audio-codec = <&codec>;
-                gpr = <&gpr>;
-                audio-routing =
-                        "MIC_IN", "Mic Jack",
-                        "Mic Jack", "Mic Bias",
-                        "Headphone Jack", "HP_OUT",
-                        "LINE_IN", "Line In Jack";
-        };
+		compatible = "fsl,imx6ul-evk-wm8960",
+			   "fsl,imx-audio-wm8960";
+		model = "wm8960-audio";
+		cpu-dai = <&sai2>;
+		audio-codec = <&codec>;
+		asrc-controller = <&asrc>;
+		codec-master;
+		gpr = <&gpr>;
+		/*
+                 * hp-det = <hp-det-pin hp-det-polarity>;
+		 * hp-det-pin: JD1 JD2  or JD3
+		 * hp-det-polarity = 0: hp detect high for headphone
+		 * hp-det-polarity = 1: hp detect high for speaker
+		 */
+		hp-det = <3 0>;
+		hp-det-gpios = <&gpio1 8 0>;
+		/*mic-det-gpios = <&gpio5 4 0>;*/
+		audio-routing =
+			"Headphone Jack", "HP_L",
+			"Headphone Jack", "HP_R",
+			
+			"LINPUT1", "Mic Jack",
+			"LINPUT3", "Mic Jack",
+		
+			"Mic Jack", "MICB",
+			"CPU-Playback", "ASRC-Playback",
+			"Playback", "CPU-Playback",
+			"ASRC-Capture", "CPU-Capture",
+			"CPU-Capture", "Capture";
+	};
 
 };
 
@@ -303,13 +322,12 @@
 			VDDD-supply = <&reg_0p0v>;
 		};*/
 		codec: wm8960@1a {
-                        compatible = "fsl,sgtl5000";
-                        reg = <0x1a>;
-                        clocks = <&clks IMX6UL_CLK_OSC>; 
-                        VDDA-supply = <&reg_2p5v>;
-                        VDDIO-supply = <&reg_3p3v>;
-                        VDDD-supply = <&reg_0p0v>;
-                };
+			compatible = "wlf,wm8960";
+			reg = <0x1a>;
+			clocks = <&clks IMX6UL_CLK_SAI2>;
+			clock-names = "mclk";
+			wlf,shared-lrclk;
+	};
 	
 	ov5640: ov5640@3c {
 		compatible = "ovti,ov5640";
@@ -522,8 +540,8 @@
 				MX6UL_PAD_JTAG_TDI__SAI2_TX_BCLK	0x17088
 				MX6UL_PAD_JTAG_TDO__SAI2_TX_SYNC	0x17088
 				MX6UL_PAD_JTAG_TRST_B__SAI2_TX_DATA	0x11088
-				MX6UL_PAD_JTAG_TCK__SAI2_RX_DATA	0x11088
-				MX6UL_PAD_JTAG_TMS__CCM_CLKO1		0x17088 
+				MX6UL_PAD_JTAG_TMS__SAI2_MCLK		0x17088
+				MX6UL_PAD_GPIO1_IO08__GPIO1_IO08	0x17059 
 			>;
 		};
 

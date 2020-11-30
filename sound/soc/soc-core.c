@@ -312,7 +312,7 @@ static void soc_init_component_debugfs(struct snd_soc_component *component)
 
 	if (!component->debugfs_root) {
 		dev_warn(component->dev,
-			"ASoC: Failed to create component debugfs directory\n");
+			"Trunexa soc-core: Failed to create component debugfs directory\n");
 		return;
 	}
 
@@ -337,7 +337,7 @@ static void soc_init_codec_debugfs(struct snd_soc_component *component)
 						 codec, &codec_reg_fops);
 	if (!codec->debugfs_reg)
 		dev_warn(codec->dev,
-			"ASoC: Failed to create codec register debugfs file\n");
+			"Trunexa soc-core: Failed to create codec register debugfs file\n");
 }
 
 static ssize_t codec_list_read_file(struct file *file, char __user *user_buf,
@@ -465,7 +465,7 @@ static void soc_init_card_debugfs(struct snd_soc_card *card)
 						     snd_soc_debugfs_root);
 	if (!card->debugfs_card_root) {
 		dev_warn(card->dev,
-			 "ASoC: Failed to create card debugfs directory\n");
+			 "Trunexa soc-core ASoC: Failed to create card debugfs directory\n");
 		return;
 	}
 
@@ -474,7 +474,7 @@ static void soc_init_card_debugfs(struct snd_soc_card *card)
 						    &card->pop_time);
 	if (!card->debugfs_pop_time)
 		dev_warn(card->dev,
-		       "ASoC: Failed to create pop time debugfs file\n");
+		       "Trunexa soc-core ASoC: Failed to create pop time debugfs file\n");
 }
 
 static void soc_cleanup_card_debugfs(struct snd_soc_card *card)
@@ -487,22 +487,22 @@ static void snd_soc_debugfs_init(void)
 {
 	snd_soc_debugfs_root = debugfs_create_dir("asoc", NULL);
 	if (IS_ERR(snd_soc_debugfs_root) || !snd_soc_debugfs_root) {
-		pr_warn("ASoC: Failed to create debugfs directory\n");
+		pr_warn("Trunexa soc-core ASoC: Failed to create debugfs directory\n");
 		snd_soc_debugfs_root = NULL;
 		return;
 	}
 
 	if (!debugfs_create_file("codecs", 0444, snd_soc_debugfs_root, NULL,
 				 &codec_list_fops))
-		pr_warn("ASoC: Failed to create CODEC list debugfs file\n");
+		pr_warn("Trunexa soc-core ASoC: Failed to create CODEC list debugfs file\n");
 
 	if (!debugfs_create_file("dais", 0444, snd_soc_debugfs_root, NULL,
 				 &dai_list_fops))
-		pr_warn("ASoC: Failed to create DAI list debugfs file\n");
+		pr_warn("Trunexa soc-core ASoC: Failed to create DAI list debugfs file\n");
 
 	if (!debugfs_create_file("platforms", 0444, snd_soc_debugfs_root, NULL,
 				 &platform_list_fops))
-		pr_warn("ASoC: Failed to create platform list debugfs file\n");
+		pr_warn("Trunexa soc-core ASoC: Failed to create platform list debugfs file\n");
 }
 
 static void snd_soc_debugfs_exit(void)
@@ -552,7 +552,7 @@ struct snd_pcm_substream *snd_soc_get_dai_substream(struct snd_soc_card *card,
 			!strcmp(card->rtd[i].dai_link->name, dai_link))
 			return card->rtd[i].pcm->streams[stream].substream;
 	}
-	dev_dbg(card->dev, "ASoC: failed to find dai link %s\n", dai_link);
+	dev_err(card->dev, "Trunexa soc-core ASoC: failed to find dai link %s\n", dai_link);
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_dai_substream);
@@ -566,7 +566,7 @@ struct snd_soc_pcm_runtime *snd_soc_get_pcm_runtime(struct snd_soc_card *card,
 		if (!strcmp(card->rtd[i].dai_link->name, dai_link))
 			return &card->rtd[i];
 	}
-	dev_dbg(card->dev, "ASoC: failed to find rtd %s\n", dai_link);
+	dev_err(card->dev, "Trunexa soc-core ASoC: failed to find rtd %s\n", dai_link);
 	return NULL;
 }
 EXPORT_SYMBOL_GPL(snd_soc_get_pcm_runtime);
@@ -674,8 +674,8 @@ int snd_soc_suspend(struct device *dev)
 				 * otherwise fall through.
 				 */
 				if (codec->dapm.idle_bias_off) {
-					dev_dbg(codec->dev,
-						"ASoC: idle_bias_off CODEC on over suspend\n");
+					dev_err(codec->dev,
+						"Trunexa soc-core ASoC: idle_bias_off CODEC on over suspend\n");
 					break;
 				}
 
@@ -689,8 +689,8 @@ int snd_soc_suspend(struct device *dev)
 				pinctrl_pm_select_sleep_state(codec->dev);
 				break;
 			default:
-				dev_dbg(codec->dev,
-					"ASoC: CODEC is on over suspend\n");
+				dev_err(codec->dev,
+					"Trunexa soc-core ASoC: CODEC is on over suspend\n");
 				break;
 			}
 		}
@@ -730,7 +730,7 @@ static void soc_resume_deferred(struct work_struct *work)
 	 * so userspace apps are blocked from touching us
 	 */
 
-	dev_dbg(card->dev, "ASoC: starting resume work\n");
+	dev_err(card->dev, "Trunexa soc-core ASoC: starting resume work\n");
 
 	/* Bring us up into D2 so that DAPM starts enabling things */
 	snd_power_change_state(card->snd_card, SNDRV_CTL_POWER_D2);
@@ -763,8 +763,8 @@ static void soc_resume_deferred(struct work_struct *work)
 				codec->suspended = 0;
 				break;
 			default:
-				dev_dbg(codec->dev,
-					"ASoC: CODEC was on over suspend\n");
+				dev_err(codec->dev,
+					"Trunexa soc-core ASoC: CODEC was on over suspend\n");
 				break;
 			}
 		}
@@ -812,7 +812,7 @@ static void soc_resume_deferred(struct work_struct *work)
 	if (card->resume_post)
 		card->resume_post(card);
 
-	dev_dbg(card->dev, "ASoC: resume work completed\n");
+	dev_err(card->dev, "Trunexa soc-core ASoC: resume work completed\n");
 
 	/* userspace can access us now we are back as we were before */
 	snd_power_change_state(card->snd_card, SNDRV_CTL_POWER_D0);
@@ -861,12 +861,12 @@ int snd_soc_resume(struct device *dev)
 		bus_control |= cpu_dai->driver->bus_control;
 	}
 	if (bus_control) {
-		dev_dbg(dev, "ASoC: Resuming control bus master immediately\n");
+		dev_err(dev, "Trunexa soc-core ASoC: Resuming control bus master immediately\n");
 		soc_resume_deferred(&card->deferred_resume_work);
 	} else {
-		dev_dbg(dev, "ASoC: Scheduling resume work\n");
+		dev_err(dev, "Trunexa soc-core ASoC: Scheduling resume work\n");
 		if (!schedule_work(&card->deferred_resume_work))
-			dev_err(dev, "ASoC: resume work item may be lost\n");
+			dev_err(dev, "Trunexa soc-core ASoC: resume work item may be lost\n");
 	}
 
 	return 0;
@@ -906,7 +906,8 @@ static struct snd_soc_dai *snd_soc_find_dai(
 	struct snd_soc_dai *dai;
 
 	lockdep_assert_held(&client_mutex);
-
+	pr_err("Trucrux soc-core find dai\n");
+	//pr_err("Trucrux soc-core- dainame %s ... dlcname %s\n",dai->name, dlc->dai_name);
 	/* Find CPU DAI from registered DAIs*/
 	list_for_each_entry(component, &component_list, list) {
 		if (dlc->of_node && component->dev->of_node != dlc->of_node)
@@ -914,13 +915,15 @@ static struct snd_soc_dai *snd_soc_find_dai(
 		if (dlc->name && strcmp(component->name, dlc->name))
 			continue;
 		list_for_each_entry(dai, &component->dai_list, list) {
+			pr_err("Trucrux1 soc-core- dainame %s ... dlcname %s\n",dai->name, dlc->dai_name);
 			if (dlc->dai_name && strcmp(dai->name, dlc->dai_name))
+			{
+				pr_err("Trucrux2 soc-core- dainame %s ... dlcname %s\n",dai->name, dlc->dai_name);
 				continue;
-
+			}
 			return dai;
 		}
 	}
-
 	return NULL;
 }
 
@@ -935,28 +938,32 @@ static int soc_bind_dai_link(struct snd_soc_card *card, int num)
 	const char *platform_name;
 	int i;
 
-	dev_dbg(card->dev, "ASoC: binding %s at idx %d\n", dai_link->name, num);
+	dev_err(card->dev, "Trucrux soc-core ASoC: binding %s at idx %d\n", dai_link->name, num);
 
 	cpu_dai_component.name = dai_link->cpu_name;
 	cpu_dai_component.of_node = dai_link->cpu_of_node;
 	cpu_dai_component.dai_name = dai_link->cpu_dai_name;
+	
+	dev_err(card->dev, "Trucrux soc-core ASoC: binding %s at idx %d\n", dai_link->name, num);
+
 	rtd->cpu_dai = snd_soc_find_dai(&cpu_dai_component);
 	if (!rtd->cpu_dai) {
-		dev_err(card->dev, "ASoC: CPU DAI %s not registered\n",
+		dev_err(card->dev, "Trunexa soc-core ASoC: CPU DAI %s not registered\n",
 			dai_link->cpu_dai_name);
 		return -EPROBE_DEFER;
 	}
-
+	pr_err("Trucrux soc-core .....ASOC found %s\n",dai_link->cpu_dai_name);
 	rtd->num_codecs = dai_link->num_codecs;
 
 	/* Find CODEC from registered CODECs */
 	for (i = 0; i < rtd->num_codecs; i++) {
 		codec_dais[i] = snd_soc_find_dai(&codecs[i]);
 		if (!codec_dais[i]) {
-			dev_err(card->dev, "ASoC: CODEC DAI %s not registered\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: CODEC DAI %s not registered\n",
 				codecs[i].dai_name);
 			return -EPROBE_DEFER;
 		}
+		pr_err("Trucrux soc-core.....Codec dai %s registered\n",codecs[i].dai_name);
 	}
 
 	/* Single codec links expect codec and codec_dai in runtime data */
@@ -982,7 +989,7 @@ static int soc_bind_dai_link(struct snd_soc_card *card, int num)
 		rtd->platform = platform;
 	}
 	if (!rtd->platform) {
-		dev_err(card->dev, "ASoC: platform %s not registered\n",
+		dev_err(card->dev, "Trunexa soc-core ASoC: platform %s not registered\n",
 			dai_link->platform_name);
 		return -EPROBE_DEFER;
 	}
@@ -1021,7 +1028,7 @@ static void soc_remove_dai(struct snd_soc_dai *dai, int order)
 			err = dai->driver->remove(dai);
 			if (err < 0)
 				dev_err(dai->dev,
-					"ASoC: failed to remove %s: %d\n",
+					"Trunexa soc-core ASoC: failed to remove %s: %d\n",
 					dai->name, err);
 		}
 		dai->probed = 0;
@@ -1154,7 +1161,7 @@ static int soc_probe_component(struct snd_soc_card *card,
 		ret = component->probe(component);
 		if (ret < 0) {
 			dev_err(component->dev,
-				"ASoC: failed to probe component %d\n", ret);
+				"Trunexa soc-core ASoC: failed to probe component %d\n", ret);
 			goto err_probe;
 		}
 
@@ -1217,7 +1224,7 @@ static int soc_post_component_init(struct snd_soc_pcm_runtime *rtd,
 		/* calling put_device() here to free the rtd->dev */
 		put_device(rtd->dev);
 		dev_err(rtd->card->dev,
-			"ASoC: failed to register runtime device: %d\n", ret);
+			"Trunexa soc-core ASoC: failed to register runtime device: %d\n", ret);
 		return ret;
 	}
 	rtd->dev_registered = 1;
@@ -1269,7 +1276,7 @@ static int soc_probe_dai(struct snd_soc_dai *dai, int order)
 			ret = dai->driver->probe(dai);
 			if (ret < 0) {
 				dev_err(dai->dev,
-					"ASoC: failed to probe DAI %s: %d\n",
+					"Trunexa soc-core ASoC: failed to probe DAI %s: %d\n",
 					dai->name, ret);
 				return ret;
 			}
@@ -1291,7 +1298,7 @@ static int soc_link_dai_widgets(struct snd_soc_card *card,
 	int ret;
 
 	if (rtd->num_codecs > 1)
-		dev_warn(card->dev, "ASoC: Multiple codecs not supported yet\n");
+		dev_warn(card->dev, "Trunexa soc-core ASoC: Multiple codecs not supported yet\n");
 
 	/* link the DAI widgets */
 	play_w = codec_dai->playback_widget;
@@ -1301,7 +1308,7 @@ static int soc_link_dai_widgets(struct snd_soc_card *card,
 					   dai_link->num_params, capture_w,
 					   play_w);
 		if (ret != 0) {
-			dev_err(card->dev, "ASoC: Can't link %s to %s: %d\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: Can't link %s to %s: %d\n",
 				play_w->name, capture_w->name, ret);
 			return ret;
 		}
@@ -1314,7 +1321,7 @@ static int soc_link_dai_widgets(struct snd_soc_card *card,
 					   dai_link->num_params, capture_w,
 					   play_w);
 		if (ret != 0) {
-			dev_err(card->dev, "ASoC: Can't link %s to %s: %d\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: Can't link %s to %s: %d\n",
 				play_w->name, capture_w->name, ret);
 			return ret;
 		}
@@ -1330,7 +1337,7 @@ static int soc_probe_link_dais(struct snd_soc_card *card, int num, int order)
 	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	int i, ret;
 
-	dev_dbg(card->dev, "ASoC: probe %s dai link %d late %d\n",
+	dev_err(card->dev, "Trucrux Trunexa soc-core ASoC: probe %s dai link %d late %d\n",
 			card->name, num, order);
 
 	/* set default power off timeout */
@@ -1355,7 +1362,7 @@ static int soc_probe_link_dais(struct snd_soc_card *card, int num, int order)
 	if (dai_link->init) {
 		ret = dai_link->init(rtd);
 		if (ret < 0) {
-			dev_err(card->dev, "ASoC: failed to init %s: %d\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: failed to init %s: %d\n",
 				dai_link->name, ret);
 			return ret;
 		}
@@ -1378,7 +1385,7 @@ static int soc_probe_link_dais(struct snd_soc_card *card, int num, int order)
 		/*create compress_device"*/
 		ret = soc_new_compress(rtd, num);
 		if (ret < 0) {
-			dev_err(card->dev, "ASoC: can't create compress %s\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: can't create compress %s\n",
 					 dai_link->stream_name);
 			return ret;
 		}
@@ -1388,7 +1395,7 @@ static int soc_probe_link_dais(struct snd_soc_card *card, int num, int order)
 			/* create the pcm */
 			ret = soc_new_pcm(rtd, num);
 			if (ret < 0) {
-				dev_err(card->dev, "ASoC: can't create pcm %s :%d\n",
+				dev_err(card->dev, "Trunexa soc-core ASoC: can't create pcm %s :%d\n",
 				       dai_link->stream_name, ret);
 				return ret;
 			}
@@ -1417,7 +1424,7 @@ static int soc_bind_aux_dev(struct snd_soc_card *card, int num)
 		if (aux_dev->codec_of_node)
 			name = of_node_full_name(aux_dev->codec_of_node);
 
-		dev_err(card->dev, "ASoC: %s not registered\n", name);
+		dev_err(card->dev, "Trunexa soc-core ASoC: %s not registered\n", name);
 		return -EPROBE_DEFER;
 	}
 
@@ -1445,7 +1452,7 @@ static int soc_probe_aux_dev(struct snd_soc_card *card, int num)
 	if (aux_dev->init) {
 		ret = aux_dev->init(rtd->component);
 		if (ret < 0) {
-			dev_err(card->dev, "ASoC: failed to init %s: %d\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: failed to init %s: %d\n",
 				aux_dev->name, ret);
 			return ret;
 		}
@@ -1479,7 +1486,7 @@ static int snd_soc_init_codec_cache(struct snd_soc_codec *codec)
 	ret = snd_soc_cache_init(codec);
 	if (ret < 0) {
 		dev_err(codec->dev,
-			"ASoC: Failed to set cache compression type: %d\n",
+			"Trunexa soc-core ASoC: Failed to set cache compression type: %d\n",
 			ret);
 		return ret;
 	}
@@ -1514,7 +1521,7 @@ int snd_soc_runtime_set_dai_fmt(struct snd_soc_pcm_runtime *rtd,
 		ret = snd_soc_dai_set_fmt(codec_dai, dai_fmt);
 		if (ret != 0 && ret != -ENOTSUPP) {
 			dev_warn(codec_dai->dev,
-				 "ASoC: Failed to set DAI format: %d\n", ret);
+				 "Trunexa soc-core ASoC: Failed to set DAI format: %d\n", ret);
 			return ret;
 		}
 	}
@@ -1545,7 +1552,7 @@ int snd_soc_runtime_set_dai_fmt(struct snd_soc_pcm_runtime *rtd,
 	ret = snd_soc_dai_set_fmt(cpu_dai, dai_fmt);
 	if (ret != 0 && ret != -ENOTSUPP) {
 		dev_warn(cpu_dai->dev,
-			 "ASoC: Failed to set DAI format: %d\n", ret);
+			 "Trunexa soc-core ASoC: Failed to set DAI format: %d\n", ret);
 		return ret;
 	}
 
@@ -1560,21 +1567,22 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 
 	mutex_lock(&client_mutex);
 	mutex_lock_nested(&card->mutex, SND_SOC_CARD_CLASS_INIT);
-
+	pr_err("Trucrux.....num_links= %d\n",card->num_links);
 	/* bind DAIs */
 	for (i = 0; i < card->num_links; i++) {
 		ret = soc_bind_dai_link(card, i);
+		pr_err("Trucrux......find dai lopp\n");
 		if (ret != 0)
 			goto base_error;
 	}
-
+	pr_err("Trucrux....just before bind_aux\n");
 	/* bind aux_devs too */
 	for (i = 0; i < card->num_aux_devs; i++) {
 		ret = soc_bind_aux_dev(card, i);
 		if (ret != 0)
 			goto base_error;
 	}
-
+	pr_err("Trucrux....just before initialize the register cache for each available codec\n");
 	/* initialize the register cache for each available codec */
 	list_for_each_entry(codec, &codec_list, list) {
 		if (codec->cache_init)
@@ -1585,11 +1593,12 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 	}
 
 	/* card bind complete so register a sound card */
+	pr_err("trucrux.....snd_card_new*****************\n");
 	ret = snd_card_new(card->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			card->owner, 0, &card->snd_card);
 	if (ret < 0) {
 		dev_err(card->dev,
-			"ASoC: can't create sound card for card %s: %d\n",
+			"Trunexa soc-core ASoC: can't create sound card for card %s: %d\n",
 			card->name, ret);
 		goto base_error;
 	}
@@ -1632,7 +1641,7 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 			ret = soc_probe_link_components(card, i, order);
 			if (ret < 0) {
 				dev_err(card->dev,
-					"ASoC: failed to instantiate card %d\n",
+					"Trunexa soc-core ASoC: failed to instantiate card %d\n",
 					ret);
 				goto probe_dai_err;
 			}
@@ -1646,7 +1655,7 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 			ret = soc_probe_link_dais(card, i, order);
 			if (ret < 0) {
 				dev_err(card->dev,
-					"ASoC: failed to instantiate card %d\n",
+					"Trunexa soc-core ASoC: failed to instantiate card %d\n",
 					ret);
 				goto probe_dai_err;
 			}
@@ -1657,7 +1666,7 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 		ret = soc_probe_aux_dev(card, i);
 		if (ret < 0) {
 			dev_err(card->dev,
-				"ASoC: failed to add auxiliary devices %d\n",
+				"Trunexa soc-core ASoC: failed to add auxiliary devices %d\n",
 				ret);
 			goto probe_aux_dev_err;
 		}
@@ -1699,7 +1708,7 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 	if (card->late_probe) {
 		ret = card->late_probe(card);
 		if (ret < 0) {
-			dev_err(card->dev, "ASoC: %s late_probe() failed: %d\n",
+			dev_err(card->dev, "Trunexa soc-core ASoC: %s late_probe() failed: %d\n",
 				card->name, ret);
 			goto probe_aux_dev_err;
 		}
@@ -1709,7 +1718,7 @@ static int snd_soc_instantiate_card(struct snd_soc_card *card)
 
 	ret = snd_card_register(card->snd_card);
 	if (ret < 0) {
-		dev_err(card->dev, "ASoC: failed to register soundcard %d\n",
+		dev_err(card->dev, "Trunexa soc-core ASoC: failed to register soundcard %d\n",
 				ret);
 		goto probe_aux_dev_err;
 	}
@@ -1755,7 +1764,7 @@ static int soc_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	dev_warn(&pdev->dev,
-		 "ASoC: machine %s should use snd_soc_register_card()\n",
+		 "Trunexa soc-core ASoC: machine %s should use snd_soc_register_card()\n",
 		 card->name);
 
 	/* Bodge while we unpick instantiation */
@@ -1911,7 +1920,7 @@ static int snd_soc_add_controls(struct snd_card *card, struct device *dev,
 		err = snd_ctl_add(card, snd_soc_cnew(control, data,
 						     control->name, prefix));
 		if (err < 0) {
-			dev_err(dev, "ASoC: Failed to add %s: %d\n",
+			dev_err(dev, "Trunexa soc-core ASoC: Failed to add %s: %d\n",
 				control->name, err);
 			return err;
 		}
@@ -2324,7 +2333,7 @@ static int snd_soc_init_multicodec(struct snd_soc_card *card,
 	}
 
 	if (!dai_link->codecs) {
-		dev_err(card->dev, "ASoC: DAI link has no CODECs\n");
+		dev_err(card->dev, "Trunexa soc-core ASoC: DAI link has no CODECs\n");
 		return -EINVAL;
 	}
 
@@ -2349,7 +2358,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 
 		ret = snd_soc_init_multicodec(card, link);
 		if (ret) {
-			dev_err(card->dev, "ASoC: failed to init multicodec\n");
+			dev_err(card->dev, "Trunexa soc-core ASoC: failed to init multicodec\n");
 			return ret;
 		}
 
@@ -2360,13 +2369,13 @@ int snd_soc_register_card(struct snd_soc_card *card)
 			 */
 			if (!!link->codecs[j].name ==
 			    !!link->codecs[j].of_node) {
-				dev_err(card->dev, "ASoC: Neither/both codec name/of_node are set for %s\n",
+				dev_err(card->dev, "Trunexa soc-core ASoC: Neither/both codec name/of_node are set for %s\n",
 					link->name);
 				return -EINVAL;
 			}
 			/* Codec DAI name must be specified */
 			if (!link->codecs[j].dai_name) {
-				dev_err(card->dev, "ASoC: codec_dai_name not set for %s\n",
+				dev_err(card->dev, "Trunexa soc-core ASoC: codec_dai_name not set for %s\n",
 					link->name);
 				return -EINVAL;
 			}
@@ -2378,7 +2387,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 		 */
 		if (link->platform_name && link->platform_of_node) {
 			dev_err(card->dev,
-				"ASoC: Both platform name/of_node are set for %s\n",
+				"Trunexa soc-core ASoC: Both platform name/of_node are set for %s\n",
 				link->name);
 			return -EINVAL;
 		}
@@ -2390,7 +2399,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 		 */
 		if (link->cpu_name && link->cpu_of_node) {
 			dev_err(card->dev,
-				"ASoC: Neither/both cpu name/of_node are set for %s\n",
+				"Trunexa soc-core ASoC: Neither/both cpu name/of_node are set for %s\n",
 				link->name);
 			return -EINVAL;
 		}
@@ -2401,7 +2410,7 @@ int snd_soc_register_card(struct snd_soc_card *card)
 		if (!link->cpu_dai_name &&
 		    !(link->cpu_name || link->cpu_of_node)) {
 			dev_err(card->dev,
-				"ASoC: Neither cpu_dai_name nor cpu_name/of_node are set for %s\n",
+				"Trunexa soc-core ASoC: Neither cpu_dai_name nor cpu_name/of_node are set for %s\n",
 				link->name);
 			return -EINVAL;
 		}
@@ -2475,7 +2484,7 @@ int snd_soc_unregister_card(struct snd_soc_card *card)
 		card->instantiated = false;
 		snd_soc_dapm_shutdown(card);
 		soc_cleanup_card_resources(card);
-		dev_dbg(card->dev, "ASoC: Unregistered card '%s'\n", card->name);
+		dev_err(card->dev, "Trucrux Trunexa soc-core ASoC: Unregistered card '%s'\n", card->name);
 	}
 
 	return 0;
@@ -2534,7 +2543,7 @@ static inline char *fmt_multiple_name(struct device *dev,
 {
 	if (dai_drv->name == NULL) {
 		dev_err(dev,
-			"ASoC: error - multiple DAI %s registered with no name\n",
+			"Trunexa soc-core ASoC: error - multiple DAI %s registered with no name\n",
 			dev_name(dev));
 		return NULL;
 	}
@@ -2552,7 +2561,7 @@ static void snd_soc_unregister_dais(struct snd_soc_component *component)
 	struct snd_soc_dai *dai, *_dai;
 
 	list_for_each_entry_safe(dai, _dai, &component->dai_list, list) {
-		dev_dbg(component->dev, "ASoC: Unregistered DAI '%s'\n",
+		dev_err(component->dev, "Trucrux Trunexa soc-core ASoC: Unregistered DAI '%s'\n",
 			dai->name);
 		list_del(&dai->list);
 		kfree(dai->name);
@@ -2578,7 +2587,7 @@ static int snd_soc_register_dais(struct snd_soc_component *component,
 	unsigned int i;
 	int ret;
 
-	dev_dbg(dev, "ASoC: dai register %s #%Zu\n", dev_name(dev), count);
+	dev_err(dev, "Trucrux Trunexa soc-core ASoC: dai register %s #%Zu\n", dev_name(dev), count);
 
 	component->dai_drv = dai_drv;
 	component->num_dai = count;
@@ -2622,7 +2631,7 @@ static int snd_soc_register_dais(struct snd_soc_component *component,
 
 		list_add(&dai->list, &component->dai_list);
 
-		dev_dbg(dev, "ASoC: Registered DAI '%s'\n", dai->name);
+		dev_err(dev, "Trucrux Trunexa soc-core ASoC: Registered DAI '%s'\n", dai->name);
 	}
 
 	return 0;
@@ -2656,7 +2665,7 @@ static int snd_soc_component_initialize(struct snd_soc_component *component,
 
 	component->name = fmt_single_name(dev, &component->id);
 	if (!component->name) {
-		dev_err(dev, "ASoC: Failed to allocate name\n");
+		dev_err(dev, "Trunexa soc-core ASoC: Failed to allocate name\n");
 		return -ENOMEM;
 	}
 
@@ -2779,7 +2788,7 @@ int snd_soc_register_component(struct device *dev,
 
 	cmpnt = kzalloc(sizeof(*cmpnt), GFP_KERNEL);
 	if (!cmpnt) {
-		dev_err(dev, "ASoC: Failed to allocate memory\n");
+		dev_err(dev, "Trunexa soc-core ASoC: Failed to allocate memory\n");
 		return -ENOMEM;
 	}
 
@@ -2792,7 +2801,7 @@ int snd_soc_register_component(struct device *dev,
 
 	ret = snd_soc_register_dais(cmpnt, dai_drv, num_dai, true);
 	if (ret < 0) {
-		dev_err(dev, "ASoC: Failed to register DAIs: %d\n", ret);
+		dev_err(dev, "Trunexa soc-core ASoC: Failed to register DAIs: %d\n", ret);
 		goto err_cleanup;
 	}
 
@@ -2879,7 +2888,7 @@ int snd_soc_add_platform(struct device *dev, struct snd_soc_platform *platform,
 	list_add(&platform->list, &platform_list);
 	mutex_unlock(&client_mutex);
 
-	dev_dbg(dev, "ASoC: Registered platform '%s'\n",
+	dev_err(dev, "Trucrux Trunexa soc-core ASoC: Registered platform '%s'\n",
 		platform->component.name);
 
 	return 0;
@@ -2897,7 +2906,7 @@ int snd_soc_register_platform(struct device *dev,
 	struct snd_soc_platform *platform;
 	int ret;
 
-	dev_dbg(dev, "ASoC: platform register %s\n", dev_name(dev));
+	dev_err(dev, "Trunexa soc-core ASoC: platform register %s\n", dev_name(dev));
 
 	platform = kzalloc(sizeof(struct snd_soc_platform), GFP_KERNEL);
 	if (platform == NULL)
@@ -2923,7 +2932,7 @@ void snd_soc_remove_platform(struct snd_soc_platform *platform)
 	snd_soc_component_del_unlocked(&platform->component);
 	mutex_unlock(&client_mutex);
 
-	dev_dbg(platform->dev, "ASoC: Unregistered platform '%s'\n",
+	dev_err(platform->dev, "Trucrux Trunexa soc-core ASoC: Unregistered platform '%s'\n",
 		platform->component.name);
 
 	snd_soc_component_cleanup(&platform->component);
@@ -3052,7 +3061,7 @@ int snd_soc_register_codec(struct device *dev,
 	struct snd_soc_dai *dai;
 	int ret, i;
 
-	dev_dbg(dev, "codec register %s\n", dev_name(dev));
+	dev_err(dev, "codec register %s\n", dev_name(dev));
 
 	codec = kzalloc(sizeof(struct snd_soc_codec), GFP_KERNEL);
 	if (codec == NULL)
@@ -3113,7 +3122,7 @@ int snd_soc_register_codec(struct device *dev,
 
 	ret = snd_soc_register_dais(&codec->component, dai_drv, num_dai, false);
 	if (ret < 0) {
-		dev_err(dev, "ASoC: Failed to register DAIs: %d\n", ret);
+		dev_err(dev, "Trunexa soc-core ASoC: Failed to register DAIs: %d\n", ret);
 		goto err_cleanup;
 	}
 
@@ -3125,7 +3134,7 @@ int snd_soc_register_codec(struct device *dev,
 	list_add(&codec->list, &codec_list);
 	mutex_unlock(&client_mutex);
 
-	dev_dbg(codec->dev, "ASoC: Registered codec '%s'\n",
+	dev_err(codec->dev, "ASoC: Registered codec '%s'\n",
 		codec->component.name);
 	return 0;
 
@@ -3159,7 +3168,7 @@ found:
 	snd_soc_component_del_unlocked(&codec->component);
 	mutex_unlock(&client_mutex);
 
-	dev_dbg(codec->dev, "ASoC: Unregistered codec '%s'\n",
+	dev_err(codec->dev, "Trunexa soc-core ASoC: Unregistered codec '%s'\n",
 			codec->component.name);
 
 	snd_soc_component_cleanup(&codec->component);
@@ -3190,7 +3199,7 @@ int snd_soc_of_parse_card_name(struct snd_soc_card *card,
 	 */
 	if (ret < 0 && ret != -EINVAL) {
 		dev_err(card->dev,
-			"ASoC: Property '%s' could not be read: %d\n",
+			"Trunexa soc-core ASoC: Property '%s' could not be read: %d\n",
 			propname, ret);
 		return ret;
 	}
@@ -3217,18 +3226,18 @@ int snd_soc_of_parse_audio_simple_widgets(struct snd_soc_card *card,
 	num_widgets = of_property_count_strings(np, propname);
 	if (num_widgets < 0) {
 		dev_err(card->dev,
-			"ASoC: Property '%s' does not exist\n",	propname);
+			"Trunexa soc-core ASoC: Property '%s' does not exist\n",	propname);
 		return -EINVAL;
 	}
 	if (num_widgets & 1) {
 		dev_err(card->dev,
-			"ASoC: Property '%s' length is not even\n", propname);
+			"Trunexa soc-core ASoC: Property '%s' length is not even\n", propname);
 		return -EINVAL;
 	}
 
 	num_widgets /= 2;
 	if (!num_widgets) {
-		dev_err(card->dev, "ASoC: Property '%s's length is zero\n",
+		dev_err(card->dev, "Trunexa soc-core ASoC: Property '%s's length is zero\n",
 			propname);
 		return -EINVAL;
 	}
@@ -3237,7 +3246,7 @@ int snd_soc_of_parse_audio_simple_widgets(struct snd_soc_card *card,
 			       GFP_KERNEL);
 	if (!widgets) {
 		dev_err(card->dev,
-			"ASoC: Could not allocate memory for widgets\n");
+			"Trunexa soc-core ASoC: Could not allocate memory for widgets\n");
 		return -ENOMEM;
 	}
 
@@ -3246,7 +3255,7 @@ int snd_soc_of_parse_audio_simple_widgets(struct snd_soc_card *card,
 			2 * i, &template);
 		if (ret) {
 			dev_err(card->dev,
-				"ASoC: Property '%s' index %d read error:%d\n",
+				"Trunexa soc-core ASoC: Property '%s' index %d read error:%d\n",
 				propname, 2 * i, ret);
 			return -EINVAL;
 		}
@@ -3261,7 +3270,7 @@ int snd_soc_of_parse_audio_simple_widgets(struct snd_soc_card *card,
 
 		if (j >= ARRAY_SIZE(simple_widgets)) {
 			dev_err(card->dev,
-				"ASoC: DAPM widget '%s' is not supported\n",
+				"Trunexa soc-core ASoC: DAPM widget '%s' is not supported\n",
 				template);
 			return -EINVAL;
 		}
@@ -3271,7 +3280,7 @@ int snd_soc_of_parse_audio_simple_widgets(struct snd_soc_card *card,
 						    &wname);
 		if (ret) {
 			dev_err(card->dev,
-				"ASoC: Property '%s' index %d read error:%d\n",
+				"Trunexa soc-core ASoC: Property '%s' index %d read error:%d\n",
 				propname, (2 * i) + 1, ret);
 			return -EINVAL;
 		}
@@ -3326,13 +3335,13 @@ int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
 	num_routes = of_property_count_strings(np, propname);
 	if (num_routes < 0 || num_routes & 1) {
 		dev_err(card->dev,
-			"ASoC: Property '%s' does not exist or its length is not even\n",
+			"Trunexa soc-core ASoC: Property '%s' does not exist or its length is not even\n",
 			propname);
 		return -EINVAL;
 	}
 	num_routes /= 2;
 	if (!num_routes) {
-		dev_err(card->dev, "ASoC: Property '%s's length is zero\n",
+		dev_err(card->dev, "Trunexa soc-core ASoC: Property '%s's length is zero\n",
 			propname);
 		return -EINVAL;
 	}
@@ -3341,7 +3350,7 @@ int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
 			      GFP_KERNEL);
 	if (!routes) {
 		dev_err(card->dev,
-			"ASoC: Could not allocate DAPM route table\n");
+			"Trunexa soc-core ASoC: Could not allocate DAPM route table\n");
 		return -EINVAL;
 	}
 
@@ -3350,7 +3359,7 @@ int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
 			2 * i, &routes[i].sink);
 		if (ret) {
 			dev_err(card->dev,
-				"ASoC: Property '%s' index %d could not be read: %d\n",
+				"Trunexa soc-core ASoC: Property '%s' index %d could not be read: %d\n",
 				propname, 2 * i, ret);
 			return -EINVAL;
 		}
@@ -3358,7 +3367,7 @@ int snd_soc_of_parse_audio_routing(struct snd_soc_card *card,
 			(2 * i) + 1, &routes[i].source);
 		if (ret) {
 			dev_err(card->dev,
-				"ASoC: Property '%s' index %d could not be read: %d\n",
+				"Trunexa soc-core ASoC: Property '%s' index %d could not be read: %d\n",
 				propname, (2 * i) + 1, ret);
 			return -EINVAL;
 		}
@@ -3489,7 +3498,7 @@ static int snd_soc_get_dai_name(struct of_phandle_args *args,
 {
 	struct snd_soc_component *pos;
 	int ret = -EPROBE_DEFER;
-
+	pr_err("Trucrux soc-core log5\n");
 	mutex_lock(&client_mutex);
 	list_for_each_entry(pos, &component_list, list) {
 		if (pos->dev->of_node != args->np)
@@ -3537,7 +3546,7 @@ int snd_soc_of_get_dai_name(struct device_node *of_node,
 {
 	struct of_phandle_args args;
 	int ret;
-
+	pr_err("Trucrux soc-core log4\n");
 	ret = of_parse_phandle_with_args(of_node, "sound-dai",
 					 "#sound-dai-cells", 0, &args);
 	if (ret)
@@ -3572,7 +3581,7 @@ int snd_soc_of_get_dai_link_codecs(struct device *dev,
 	struct snd_soc_dai_link_component *component;
 	char *name;
 	int index, num_codecs, ret;
-
+	pr_err("Trucrux soc-core log3\n");
 	/* Count the number of CODECs */
 	name = "sound-dai";
 	num_codecs = of_count_phandle_with_args(of_node, name,
@@ -3624,6 +3633,7 @@ EXPORT_SYMBOL_GPL(snd_soc_of_get_dai_link_codecs);
 
 static int __init snd_soc_init(void)
 {
+	pr_err("Trucrux soc-core log2\n");
 	snd_soc_debugfs_init();
 	snd_soc_util_init();
 
@@ -3632,7 +3642,8 @@ static int __init snd_soc_init(void)
 module_init(snd_soc_init);
 
 static void __exit snd_soc_exit(void)
-{
+{	
+	pr_err("Trucrux soc-core log1\n");
 	snd_soc_util_exit();
 	snd_soc_debugfs_exit();
 

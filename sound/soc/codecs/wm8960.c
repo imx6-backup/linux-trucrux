@@ -187,7 +187,7 @@ static int wm8960_set_deemph(struct snd_soc_codec *codec)
 		val = 0;
 	}
 
-	dev_dbg(codec->dev, "Set deemphasis %d\n", val);
+	dev_err(codec->dev, "Trucrux wm8960Set deemphasis %d\n", val);
 
 	return snd_soc_update_bits(codec, WM8960_DACCTL1,
 				   0x6, val);
@@ -483,6 +483,7 @@ static int wm8960_add_widgets(struct snd_soc_codec *codec)
 	/* In capless mode OUT3 is used to provide VMID for the
 	 * headphone outputs, otherwise it is used as a mono mixer.
 	 */
+	pr_err("Trucrux wm8960 log1 \n");
 	if (pdata && pdata->capless) {
 		snd_soc_dapm_new_controls(dapm, wm8960_dapm_widgets_capless,
 					  ARRAY_SIZE(wm8960_dapm_widgets_capless));
@@ -526,8 +527,10 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
 		iface |= 0x0040;
+		pr_err("Trucrux wm8960 log2 \n");
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
+		pr_err("Trucrux wm8960 log3 \n");
 		break;
 	default:
 		return -EINVAL;
@@ -537,17 +540,22 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= 0x0002;
+		pr_err("Trucrux wm8960 log4\n");
 		break;
 	case SND_SOC_DAIFMT_RIGHT_J:
+		pr_err("Trucrux wm8960 log5 \n");
 		break;
 	case SND_SOC_DAIFMT_LEFT_J:
+		pr_err("Trucrux wm8960 log6 \n");
 		iface |= 0x0001;
 		break;
 	case SND_SOC_DAIFMT_DSP_A:
+		pr_err("Trucrux wm8960 log7 \n");
 		iface |= 0x0003;
 		break;
 	case SND_SOC_DAIFMT_DSP_B:
 		iface |= 0x0013;
+		pr_err("Trucrux wm8960 log8 \n");
 		break;
 	default:
 		return -EINVAL;
@@ -556,15 +564,19 @@ static int wm8960_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	/* clock inversion */
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
+		pr_err("Trucrux wm8960 log9 \n");
 		break;
 	case SND_SOC_DAIFMT_IB_IF:
 		iface |= 0x0090;
+		pr_err("Trucrux wm8960 log10 \n");
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
 		iface |= 0x0080;
+		pr_err("Trucrux wm8960 log11 \n");
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
 		iface |= 0x0010;
+		pr_err("Trucrux wm8960 log12 \n");
 		break;
 	default:
 		return -EINVAL;
@@ -608,15 +620,15 @@ static int wm8960_configure_clocking(struct snd_soc_codec *codec)
 	int sysclk, bclk, lrclk, freq_out, freq_in;
 	u16 iface1 = snd_soc_read(codec, WM8960_IFACE1);
 	int i, j, k;
-
+	pr_err("Trucrux wm8960 log13 \n");
 	if (!(iface1 & (1<<6))) {
-		dev_dbg(codec->dev,
-			"Codec is slave mode, no need to configure clock\n");
+		dev_err(codec->dev,
+			"Trucrux wm8960 Codec is slave mode, no need to configure clock\n");
 		return 0;
 	}
 
 	if (wm8960->clk_id != WM8960_SYSCLK_MCLK && !wm8960->freq_in) {
-		dev_err(codec->dev, "No MCLK configured\n");
+		dev_err(codec->dev, "Trucrux wm8960Trucrux wm8960No MCLK configured\n");
 		return -EINVAL;
 	}
 
@@ -636,7 +648,7 @@ static int wm8960_configure_clocking(struct snd_soc_codec *codec)
 	} else if (wm8960->sysclk) {
 		freq_out = wm8960->sysclk;
 	} else {
-		dev_err(codec->dev, "No SYSCLK configured\n");
+		dev_err(codec->dev, "Trucrux wm8960Trucrux wm8960No SYSCLK configured\n");
 		return -EINVAL;
 	}
 
@@ -661,7 +673,7 @@ static int wm8960_configure_clocking(struct snd_soc_codec *codec)
 	if (i != ARRAY_SIZE(sysclk_divs)) {
 		goto configure_clock;
 	} else if (wm8960->clk_id != WM8960_SYSCLK_AUTO) {
-		dev_err(codec->dev, "failed to configure clock\n");
+		dev_err(codec->dev, "Trucrux wm8960failed to configure clock\n");
 		return -EINVAL;
 	}
 	/* get a available pll out frequency and set pll */
@@ -690,7 +702,7 @@ static int wm8960_configure_clocking(struct snd_soc_codec *codec)
 	}
 
 	if (i == ARRAY_SIZE(sysclk_divs)) {
-		dev_err(codec->dev, "failed to configure clock\n");
+		dev_err(codec->dev, "Trucrux wm8960failed to configure clock\n");
 		return -EINVAL;
 	}
 
@@ -717,7 +729,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 	u16 iface = snd_soc_read(codec, WM8960_IFACE1) & 0xfff3;
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
 	int i;
-
+	pr_err("Trucrux wm8960 log14\n");
 	wm8960->bclk = snd_soc_params_to_bclk(params);
 	if (params_channels(params) == 1)
 		wm8960->bclk *= 2;
@@ -739,7 +751,7 @@ static int wm8960_hw_params(struct snd_pcm_substream *substream,
 			break;
 		}
 	default:
-		dev_err(codec->dev, "unsupported width %d\n",
+		dev_err(codec->dev, "Trucrux wm8960 unsupported width %d\n",
 			params_width(params));
 		return -EINVAL;
 	}
@@ -775,14 +787,14 @@ static int wm8960_hw_free(struct snd_pcm_substream *substream,
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
 
 	wm8960->is_stream_in_use[tx] = false;
-
+	pr_err("Trucrux wm8960 log15 \n");
 	return 0;
 }
 
 static int wm8960_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
-
+	pr_err("Trucrux wm8960 log16 \n");
 	if (mute)
 		snd_soc_update_bits(codec, WM8960_DACCTL1, 0x8, 0x8);
 	else
@@ -799,16 +811,18 @@ static int wm8960_set_bias_level_out3(struct snd_soc_codec *codec,
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+		pr_err("Trucrux wm8960 log17 \n");
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
+		pr_err("Trucrux wm8960 log18 \n");
 		switch (codec->dapm.bias_level) {
 		case SND_SOC_BIAS_STANDBY:
 			if (!IS_ERR(wm8960->mclk)) {
 				ret = clk_prepare_enable(wm8960->mclk);
 				if (ret) {
 					dev_err(codec->dev,
-						"Failed to enable MCLK: %d\n",
+						"Trucrux wm8960 Failed to enable MCLK: %d\n",
 						ret);
 					return ret;
 				}
@@ -823,6 +837,7 @@ static int wm8960_set_bias_level_out3(struct snd_soc_codec *codec,
 			 * If it's sysclk auto mode, and the pll is enabled,
 			 * disable the pll
 			 */
+			pr_err("Trucrux wm8960 log19 \n");
 			if (wm8960->clk_id == WM8960_SYSCLK_AUTO && (pm2 & 0x1))
 				wm8960_set_pll(codec, 0, 0);
 
@@ -837,6 +852,7 @@ static int wm8960_set_bias_level_out3(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
+		pr_err("Trucrux wm8960 log20 \n");
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			regcache_sync(wm8960->regmap);
 
@@ -862,6 +878,7 @@ static int wm8960_set_bias_level_out3(struct snd_soc_codec *codec,
 		break;
 
 	case SND_SOC_BIAS_OFF:
+		pr_err("Trucrux wm8960 log21 \n");
 		/* Enable anti-pop features */
 		snd_soc_write(codec, WM8960_APOP1,
 			     WM8960_POBCTRL | WM8960_SOFT_ST |
@@ -884,8 +901,8 @@ static int wm8960_set_bias_level_capless(struct snd_soc_codec *codec,
 	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
 	u16 pm2 = snd_soc_read(codec, WM8960_POWER2);
 	int reg, ret;
-
-	switch (level) {
+	pr_err("Trucrux wm8960 log22 \n");
+	switch (level) {	
 	case SND_SOC_BIAS_ON:
 		break;
 
@@ -929,7 +946,7 @@ static int wm8960_set_bias_level_capless(struct snd_soc_codec *codec,
 				ret = clk_prepare_enable(wm8960->mclk);
 				if (ret) {
 					dev_err(codec->dev,
-						"Failed to enable MCLK: %d\n",
+						"Trucrux wm8960 Failed to enable MCLK: %d\n",
 						ret);
 					return ret;
 				}
@@ -1012,7 +1029,7 @@ struct _pll_div {
 static bool is_pll_freq_available(unsigned int source, unsigned int target)
 {
 	unsigned int Ndiv;
-
+	pr_err("Trucrux wm8960 log23 \n");
 	if (source == 0 || target == 0)
 		return false;
 
@@ -1041,8 +1058,8 @@ static int pll_factors(unsigned int source, unsigned int target,
 	unsigned long long Kpart;
 	unsigned int K, Ndiv, Nmod;
 
-	pr_debug("WM8960 PLL: setting %dHz->%dHz\n", source, target);
-
+	pr_err("WM8960 PLL: setting %dHz->%dHz\n", source, target);
+	pr_err("Trucrux wm8960 log24 \n");
 	/* Scale up target to PLL operating frequency */
 	target *= 4;
 
@@ -1088,7 +1105,7 @@ static int wm8960_set_pll(struct snd_soc_codec *codec,
 	u16 reg;
 	static struct _pll_div pll_div;
 	int ret;
-
+	pr_err("Trucrux wm8960 log25\n");
 	if (freq_in && freq_out) {
 		ret = pll_factors(freq_in, freq_out, &pll_div);
 		if (ret != 0)
@@ -1132,6 +1149,7 @@ static int wm8960_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 
 	wm8960->freq_in = freq_in;
 
+	pr_err("Trucrux wm8960 log26 \n");
 	if (pll_id == WM8960_SYSCLK_AUTO)
 		return 0;
 
@@ -1143,7 +1161,7 @@ static int wm8960_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 reg;
-
+	pr_err("Trucrux wm8960 log27 \n");
 	switch (div_id) {
 	case WM8960_SYSCLKDIV:
 		reg = snd_soc_read(codec, WM8960_CLOCK1) & 0x1f9;
@@ -1176,7 +1194,7 @@ static int wm8960_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
 	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
+	pr_err("Trucrux wm8960 log28 \n");
 	return wm8960->set_bias_level(codec, level);
 }
 
@@ -1185,7 +1203,7 @@ static int wm8960_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
 {
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
-
+	pr_err("Trucrux wm8960 log29 \n");
 	switch (clk_id) {
 	case WM8960_SYSCLK_MCLK:
 		snd_soc_update_bits(codec, WM8960_CLOCK1,
@@ -1245,7 +1263,7 @@ static int wm8960_probe(struct snd_soc_codec *codec)
 {
 	struct wm8960_priv *wm8960 = snd_soc_codec_get_drvdata(codec);
 	struct wm8960_data *pdata = &wm8960->pdata;
-
+	pr_err("Trucrux wm8960 log30 \n");
 	if (pdata->capless)
 		wm8960->set_bias_level = wm8960_set_bias_level_capless;
 	else
@@ -1280,7 +1298,7 @@ static void wm8960_set_pdata_from_of(struct i2c_client *i2c,
 				struct wm8960_data *pdata)
 {
 	const struct device_node *np = i2c->dev.of_node;
-
+	pr_err("Trucrux wm8960 log31 \n");
 	if (of_property_read_bool(np, "wlf,capless"))
 		pdata->capless = true;
 
@@ -1294,7 +1312,7 @@ static int wm8960_i2c_probe(struct i2c_client *i2c,
 	struct wm8960_data *pdata = dev_get_platdata(&i2c->dev);
 	struct wm8960_priv *wm8960;
 	int ret;
-
+	dev_err(&i2c->dev,"Trucrux wm8960 log32 \n");
 	wm8960 = devm_kzalloc(&i2c->dev, sizeof(struct wm8960_priv),
 			      GFP_KERNEL);
 	if (wm8960 == NULL)
@@ -1317,7 +1335,7 @@ static int wm8960_i2c_probe(struct i2c_client *i2c,
 
 	ret = wm8960_reset(wm8960->regmap);
 	if (ret != 0) {
-		dev_err(&i2c->dev, "Failed to issue reset\n");
+		dev_err(&i2c->dev, "Trucrux wm8960 Failed to issue reset\n");
 		return ret;
 	}
 
@@ -1325,7 +1343,7 @@ static int wm8960_i2c_probe(struct i2c_client *i2c,
 		ret = regmap_update_bits(wm8960->regmap, WM8960_ADDCTL2,
 					 0x4, 0x4);
 		if (ret != 0) {
-			dev_err(&i2c->dev, "Failed to enable LRCM: %d\n",
+			dev_err(&i2c->dev, "Trucrux wm8960 Failed to enable LRCM: %d\n",
 				ret);
 			return ret;
 		}
@@ -1353,6 +1371,7 @@ static int wm8960_i2c_probe(struct i2c_client *i2c,
 
 static int wm8960_i2c_remove(struct i2c_client *client)
 {
+	dev_err(&client->dev,"Trucrux wm8960 log33 \n");
 	snd_soc_unregister_codec(&client->dev);
 	return 0;
 }

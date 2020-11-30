@@ -211,6 +211,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBS_CFS;
 
+	dev_err(dev,"Trucrux imx-wm8960 log1\n");
 	/* set cpu DAI configuration */
 	ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
 	if (ret) {
@@ -219,6 +220,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 	}
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
+	dev_err(dev,"Trucrux imx-wm8960 log2\n");
 	if (ret) {
 		dev_err(dev, "failed to set codec dai fmt: %d\n", ret);
 		return ret;
@@ -226,12 +228,14 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 
 	if (!data->is_codec_master) {
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0, 0, 2, params_width(params));
+		dev_err(dev,"Trucrux imx-wm8960 log3\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu dai tdm slot: %d\n", ret);
 			return ret;
 		}
 
 		ret = snd_soc_dai_set_sysclk(cpu_dai, 0, 0, SND_SOC_CLOCK_OUT);
+		dev_err(dev,"Trucrux imx-wm8960 log4\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu sysclk: %d\n", ret);
 			return ret;
@@ -239,6 +243,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		return 0;
 	} else {
 		ret = snd_soc_dai_set_sysclk(cpu_dai, 0, 0, SND_SOC_CLOCK_IN);
+		dev_err(dev,"Trucrux imx-wm8960 log5\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu sysclk: %d\n", ret);
 			return ret;
@@ -278,7 +283,7 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 		if (ret)
 			dev_warn(dev, "failed to set codec dai fmt: %d\n", ret);
 	}
-
+	pr_err("Trucrux imx-wm8960 log6\n");
 	return 0;
 }
 
@@ -304,7 +309,7 @@ static int imx_hifi_startup(struct snd_pcm_substream *substream)
 		data->is_stream_opened[tx] = false;
 		return -EBUSY;
 	}
-
+	dev_err(card->dev,"Trucrux imx-wm8960 log7\n");
 	if (!data->is_codec_master) {
 		ret = snd_pcm_hw_constraint_list(substream->runtime, 0,
 				SNDRV_PCM_HW_PARAM_RATE, &imx_wm8960_rate_constraints);
@@ -331,6 +336,7 @@ static void imx_hifi_shutdown(struct snd_pcm_substream *substream)
 	clk_disable_unprepare(data->codec_clk);
 
 	data->is_stream_opened[tx] = false;
+	pr_err("Trucrux imx-wm8960 log8\n");
 }
 
 static struct snd_soc_ops imx_hifi_ops = {
@@ -360,7 +366,7 @@ static int imx_wm8960_late_probe(struct snd_soc_card *card)
 	snd_soc_update_bits(codec, WM8960_ADDCTL2, 1<<5, data->hp_det[1]<<5);
 	snd_soc_update_bits(codec, WM8960_ADDCTL4, 3<<2, data->hp_det[0]<<2);
 	snd_soc_update_bits(codec, WM8960_ADDCTL1, 3, 3);
-
+	pr_err("Trucrux imx-wm8960 log9\n");
 	return 0;
 }
 
@@ -372,7 +378,7 @@ static int be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	struct imx_priv *priv = &card_priv;
 	struct snd_interval *rate;
 	struct snd_mask *mask;
-
+	pr_err("Trucrux imx-wm8960 log10\n");
 	if (!priv->asrc_pdev)
 		return -EINVAL;
 
@@ -431,7 +437,7 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	int ret;
 
 	priv->pdev = pdev;
-
+	dev_err(&pdev->dev,"Trucrux imx-wm8960 log11\n");
 	cpu_np = of_parse_phandle(pdev->dev.of_node, "cpu-dai", 0);
 	if (!cpu_np) {
 		dev_err(&pdev->dev, "cpu dai phandle missing or invalid\n");
@@ -623,7 +629,7 @@ static int imx_wm8960_remove(struct platform_device *pdev)
 {
 	driver_remove_file(pdev->dev.driver, &driver_attr_micphone);
 	driver_remove_file(pdev->dev.driver, &driver_attr_headphone);
-
+	pr_err("Trucrux imx-wm8960 log12\n");
 	return 0;
 }
 
