@@ -132,12 +132,17 @@ static void stmpe_work(struct work_struct *work)
 static void calibration_pointer(int *x_orig, int *y_orig)
 {
         int  x, y;
+	int x_p,y_p;
+	x_p=*x_orig;
+        y_p= *y_orig;
+        pr_err("Trucrux1 stmpe original: x=%d , y=%d\n",x_p,y_p);
 
        x = *y_orig;
        /*TRUXD01: TOUCH:( 100 / 93 )  is the scalling factor*/
         y = ( *x_orig - STMPE_MIN_Y) * 100 / 93;
         *y_orig = y;
         *x_orig = x;
+	pr_err("Trucrux1 stmpe-scaled: x=%d , y=%d\n",x,y);
 }
 #endif
 
@@ -167,7 +172,8 @@ static irqreturn_t stmpe_ts_handler(int irq, void *data)
 	x = (data_set[0] << 4) | (data_set[1] >> 4);
 	y = ((data_set[1] & 0xf) << 8) | data_set[2];
 	z = data_set[3];
-
+	
+	pr_err("Trucrux stmpe log***************\n");
 #ifdef CONFIG_SOC_IMX6UL
         /* TRUXD01: TOUCH: Fix for touch calibration */
        calibration_pointer(&x, &y);

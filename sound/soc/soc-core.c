@@ -3551,7 +3551,7 @@ int snd_soc_of_get_dai_name(struct device_node *of_node,
 					 "#sound-dai-cells", 0, &args);
 	if (ret)
 		return ret;
-
+	pr_err("Trucrux soc-core dai_name log4:%s\n",dai_name);
 	ret = snd_soc_get_dai_name(&args, dai_name);
 
 	of_node_put(args.np);

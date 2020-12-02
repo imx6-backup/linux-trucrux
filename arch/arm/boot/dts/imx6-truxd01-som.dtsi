@@ -53,7 +53,7 @@
 		compatible = "pwm-backlight";
 		pwms = <&pwm4 0 5000000>;
 		brightness-levels = <0 4 8 16 32 64 128 255>;
-		default-brightness-level = <6>;
+		default-brightness-level = <4>;
 		status = "okay";
 	};
 
@@ -273,11 +273,11 @@
 	status = "okay";
 
 /* STMPE811 touch screen controller */
-       stmpe811@41 {
+       stmpe811@44 {
                compatible = "st,stmpe811";
                #address-cells = <1>;
                #size-cells = <0>;
-               reg = <0x41>;
+               reg = <0x44>;
                /*interrupts = <2 2>;
                interrupt-parent = <&gpio5>;*/
 	       interrupts = <18 2>;
