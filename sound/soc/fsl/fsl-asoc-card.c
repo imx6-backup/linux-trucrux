@@ -487,6 +487,7 @@ static int fsl_asoc_card_probe(struct platform_device *pdev)
 		codec_dai_name = "wm8960-hifi";
 		priv->card.set_bias_level = fsl_asoc_card_set_bias_level;
 		priv->codec_priv.codec_type = FSL_CODEC_WM8960;
+		priv->codec_priv.mclk_id=WM8960_SYSCLK_MCLK;
 		priv->codec_priv.fll_id = WM8960_SYSCLK_AUTO;
 		priv->codec_priv.pll_id = WM8960_SYSCLK_AUTO;
 		priv->dai_fmt |= SND_SOC_DAIFMT_CBM_CFM;

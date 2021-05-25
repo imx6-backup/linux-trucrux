@@ -132,7 +132,7 @@
 		model = "wm8960-audio";
 		cpu-dai = <&sai2>;
 		audio-codec = <&codec>;
-		asrc-controller = <&asrc>;
+		/*asrc-controller = <&asrc>;*/
 		codec-master;
 		gpr = <&gpr>;
 		/*
@@ -146,11 +146,9 @@
 		/*mic-det-gpios = <&gpio5 4 0>;*/
 		audio-routing =
 			"Headphone Jack", "HP_L",
-			"Headphone Jack", "HP_R",
-			
+			"Headphone Jack", "HP_R",		
 			"LINPUT1", "Mic Jack",
 			"LINPUT3", "Mic Jack",
-		
 			"Mic Jack", "MICB",
 			"CPU-Playback", "ASRC-Playback",
 			"Playback", "CPU-Playback",

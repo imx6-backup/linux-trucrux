@@ -202,6 +202,9 @@ static inline void fbcon_set_rotation(struct fb_info *info)
 		ops->rotate = ops->p->con_rotate;
 	else
 		ops->rotate = 0;
+	
+	//Trunexa added
+	ops->rotate=2;
 }
 
 static void fbcon_rotate(struct fb_info *info, u32 rotate)
