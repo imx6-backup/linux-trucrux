@@ -83,18 +83,23 @@ static int hp_jack_status_check(void *data)
 	int hp_status, ret;
 
 	hp_status = gpio_get_value(imx_hp_jack_gpio.gpio);
-
+	printk("Trunexa: hp_jack_status_check hp_status_kavita%d",hp_status);
 	if (hp_status != priv->hp_active_low) {
+	printk("Trunexa: hp_jack_status_check hp_status hp_active_low");
+
 		snd_soc_dapm_disable_pin(dapm, "Ext Spk");
 		if (priv->is_headset_jack) {
+		printk("runexa: hp_jack_status_check hp_status hp_active_low is_headset_jack");
 			snd_soc_dapm_enable_pin(dapm, "Mic Jack");
 			snd_soc_dapm_disable_pin(dapm, "Main MIC");
 		}
 		ret = imx_hp_jack_gpio.report;
 		snd_kctl_jack_report(priv->snd_card, priv->headphone_kctl, 1);
 	} else {
+		printk("runexa: hp_jack_status_check hp_status hp_active_high");
 		snd_soc_dapm_enable_pin(dapm, "Ext Spk");
 		if (priv->is_headset_jack) {
+	                printk("Trunexa: hp_jack_status_check hp_status hp_active_high is_headset_jack");
 			snd_soc_dapm_disable_pin(dapm, "Mic Jack");
 			snd_soc_dapm_enable_pin(dapm, "Main MIC");
 		}
@@ -113,6 +118,7 @@ static int mic_jack_status_check(void *data)
 	int mic_status, ret;
 
 	mic_status = gpio_get_value(imx_mic_jack_gpio.gpio);
+ printk("runexa: mic_jack_status_check");
 
 	if (mic_status != priv->mic_active_low) {
 		snd_soc_dapm_disable_pin(dapm, "Main MIC");
@@ -137,6 +143,7 @@ static int imx_wm8960_jack_init(struct snd_soc_card *card,
 		struct snd_soc_jack_gpio *gpio)
 {
 	int ret;
+ printk("runexa: imx_wm8960_jack_init\n");
 
 	ret = snd_soc_card_jack_new(card, pin->pin, pin->mask, jack, pin, 1);
 	if (ret) {
@@ -157,6 +164,8 @@ static ssize_t show_headphone(struct device_driver *dev, char *buf)
 
 	/* Check if headphone is plugged in */
 	hp_status = gpio_get_value(imx_hp_jack_gpio.gpio);
+ printk("runexa: show_headphone\n");
+ printk("runexa: hp_status = %u\n", hp_status);
 
 	if (hp_status != priv->hp_active_low)
 		strcpy(buf, "Headphone\n");
@@ -170,6 +179,7 @@ static ssize_t show_micphone(struct device_driver *dev, char *buf)
 {
 	struct imx_priv *priv = &card_priv;
 	int mic_status;
+printk("runexa: show_micphone\n");
 
 	/* Check if headphone is plugged in */
 	mic_status = gpio_get_value(imx_mic_jack_gpio.gpio);
@@ -199,6 +209,7 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 	unsigned int fmt;
 	int ret = 0;
 
+	printk("Trucrux imx_hifi_hw_params_kavita\n");
 	data->is_stream_in_use[tx] = true;
 
 	if (data->is_stream_in_use[!tx])
@@ -211,16 +222,20 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBS_CFS;
 
-	dev_err(dev,"Trucrux imx-wm8960 log1\n");
+/////	printk("rucrux imx_hifi_hw_params imx-wm8960 log1\n");
 	/* set cpu DAI configuration */
+
 	ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
+	printk("Trucrux imx_hifi_hw_params ret=cpu_dai_kavita=%d\n",ret);
+
 	if (ret) {
 		dev_err(dev, "failed to set cpu dai fmt: %d\n", ret);
 		return ret;
 	}
 	/* set codec DAI configuration */
 	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
-	dev_err(dev,"Trucrux imx-wm8960 log2\n");
+	printk("Trucrux imx_hifi_hw_params ret=codec_dai_kavita=%d\n",ret);
+///	printk("rucrux imx_hifi_hw_params imx-wm8960 log2\n");
 	if (ret) {
 		dev_err(dev, "failed to set codec dai fmt: %d\n", ret);
 		return ret;
@@ -228,14 +243,14 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 
 	if (!data->is_codec_master) {
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0, 0, 2, params_width(params));
-		dev_err(dev,"Trucrux imx-wm8960 log3\n");
+		printk("rucrux imx_hifi_hw_params imx-wm8960 log3\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu dai tdm slot: %d\n", ret);
 			return ret;
 		}
 
 		ret = snd_soc_dai_set_sysclk(cpu_dai, 0, 0, SND_SOC_CLOCK_OUT);
-		dev_err(dev,"Trucrux imx-wm8960 log4\n");
+		////printk("rucrux imx_hifi_hw_params imx-wm8960 log4\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu sysclk: %d\n", ret);
 			return ret;
@@ -243,7 +258,9 @@ static int imx_hifi_hw_params(struct snd_pcm_substream *substream,
 		return 0;
 	} else {
 		ret = snd_soc_dai_set_sysclk(cpu_dai, 0, 0, SND_SOC_CLOCK_IN);
-		dev_err(dev,"Trucrux imx-wm8960 log5\n");
+		printk("Trucrux imx_hifi_hw_params ret=set_sysclk_dai_kavita=%d\n",ret);
+
+		////printk("rucrux imx_hifi_hw_params imx-wm8960 log5\n");
 		if (ret) {
 			dev_err(dev, "failed to set cpu sysclk: %d\n", ret);
 			return ret;
@@ -277,7 +294,7 @@ static int imx_hifi_hw_free(struct snd_pcm_substream *substream)
 	int ret;
 
 	data->is_stream_in_use[tx] = false;
-
+	printk("rucrux imx_hifi_hw_params imx-wm8960 log5\n");
 	if (data->is_codec_master && !data->is_stream_in_use[!tx]) {
 		ret = snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_CBS_CFS | SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF);
 		if (ret)
@@ -303,12 +320,15 @@ static int imx_hifi_startup(struct snd_pcm_substream *substream)
 	struct fsl_sai *sai = dev_get_drvdata(cpu_dai->dev);
 	int ret = 0;
 
+	printk("rucrux imx_hifi_startup log1\n");
+
 	data->is_stream_opened[tx] = true;
 	if (data->is_stream_opened[tx] != sai->is_stream_opened[tx] ||
 	    data->is_stream_opened[!tx] != sai->is_stream_opened[!tx]) {
 		data->is_stream_opened[tx] = false;
 		return -EBUSY;
 	}
+	printk("rucrux imx_hifi_startup log2\n");
 	dev_err(card->dev,"Trucrux imx-wm8960 log7\n");
 	if (!data->is_codec_master) {
 		ret = snd_pcm_hw_constraint_list(substream->runtime, 0,
@@ -322,7 +342,7 @@ static int imx_hifi_startup(struct snd_pcm_substream *substream)
 		dev_err(card->dev, "Failed to enable MCLK: %d\n", ret);
 		return ret;
 	}
-
+	printk("rucrux imx_hifi_startup log3 before return\n");
 	return ret;
 }
 
@@ -336,6 +356,7 @@ static void imx_hifi_shutdown(struct snd_pcm_substream *substream)
 	clk_disable_unprepare(data->codec_clk);
 
 	data->is_stream_opened[tx] = false;
+	printk("rucrux imx_hifi_shutdown\n");
 	pr_err("Trucrux imx-wm8960 log8\n");
 }
 
@@ -351,22 +372,24 @@ static int imx_wm8960_late_probe(struct snd_soc_card *card)
 	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct imx_wm8960_data *data = snd_soc_card_get_drvdata(card);
+	printk("Trunexa: imx_wm8960_late_probe\n");
 
 	/*
 	 * codec ADCLRC pin configured as GPIO, DACLRC pin is used as a frame
 	 * clock for ADCs and DACs
 	 */
-	snd_soc_update_bits(codec, WM8960_IFACE2, 1<<6, 1<<6);
+	snd_soc_update_bits(codec, WM8960_IFACE2, 1<<6, 1<<6); //gpio1 pin selected
 
 	/* GPIO1 used as headphone detect output */
-	snd_soc_update_bits(codec, WM8960_ADDCTL4, 7<<4, 3<<4);
+	snd_soc_update_bits(codec, WM8960_ADDCTL4, 7<<4, 3<<4);// 0111 0000
 
 	/* Enable headphone jack detect */
-	snd_soc_update_bits(codec, WM8960_ADDCTL2, 1<<6, 1<<6);
-	snd_soc_update_bits(codec, WM8960_ADDCTL2, 1<<5, data->hp_det[1]<<5);
-	snd_soc_update_bits(codec, WM8960_ADDCTL4, 3<<2, data->hp_det[0]<<2);
-	snd_soc_update_bits(codec, WM8960_ADDCTL1, 3, 3);
+	snd_soc_update_bits(codec, WM8960_ADDCTL2, 1<<6, 1<<6); // hp sw enabled
+//	snd_soc_update_bits(codec, WM8960_ADDCTL2, 1<<5, data->hp_det[1]<<5);//now Speaker disabled, HP enabled
+	snd_soc_update_bits(codec, WM8960_ADDCTL4, 3<<2, data->hp_det[0]<<2);// JD3 used for jack detect
+	snd_soc_update_bits(codec, WM8960_ADDCTL1, 3, 3);// Timeout enabled & clk selection for faster response 
 	pr_err("Trucrux imx-wm8960 log9\n");
+	printk("Trunexa: imx_wm8960_late_probe _kavita HP enabled\n");
 	return 0;
 }
 
@@ -435,6 +458,7 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	struct device_node *asrc_np;
 	u32 width;
 	int ret;
+	printk("Trunexa: imx_wm8960_probe_kavita\n");
 
 	priv->pdev = pdev;
 	dev_err(&pdev->dev,"Trucrux imx-wm8960 log11\n");
@@ -448,9 +472,11 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	codec_np = of_parse_phandle(pdev->dev.of_node, "audio-codec", 0);
 	if (!codec_np) {
 		dev_err(&pdev->dev, "phandle missing or invalid\n");
+		printk("Trunexa: imx_wm8960_probe_kavita phandle missing or invalid\n");
 		ret = -EINVAL;
 		goto fail;
 	}
+	printk("Trunexa: imx_wm8960_probe_kavita phandle ok\n");
 
 	cpu_pdev = of_find_device_by_node(cpu_np);
 	if (!cpu_pdev) {
@@ -462,9 +488,11 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	codec_dev = of_find_i2c_device_by_node(codec_np);
 	if (!codec_dev || !codec_dev->dev.driver) {
 		dev_err(&pdev->dev, "failed to find codec platform device\n");
+		printk("Trunexa: imx_wm8960_probe_kavita failed to find codec platform device\n");
 		ret = -EINVAL;
 		goto fail;
 	}
+	printk("Trunexa: imx_wm8960_probe_kavita  codec platform device ok\n");
 
 	data = devm_kzalloc(&pdev->dev, sizeof(*data), GFP_KERNEL);
 	if (!data) {
@@ -479,8 +507,10 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	if (IS_ERR(data->codec_clk)) {
 		ret = PTR_ERR(data->codec_clk);
 		dev_err(&pdev->dev, "failed to get codec clk: %d\n", ret);
+		printk("Trunexa: imx_wm8960_probe_kavita failed to get codec clk\n");
 		goto fail;
 	}
+	printk("Trunexa: imx_wm8960_probe_kavita codec_clk ok\n");
 
 	gpr_np = of_parse_phandle(pdev->dev.of_node, "gpr", 0);
         if (gpr_np) {
@@ -491,6 +521,7 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 			goto fail;
 		}
 
+		printk("Trunexa: imx_wm8960_probe_kavita gpr regmap ok\n");
 		/* set SAI2_MCLK_DIR to enable codec MCLK for imx7d */
 		regmap_update_bits(data->gpr, 4, 1<<20, 1<<20);
 	}
@@ -509,9 +540,13 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	imx_wm8960_dai[0].cpu_dai_name = dev_name(&cpu_pdev->dev);
 	imx_wm8960_dai[0].platform_of_node = cpu_np;
 
+	printk("Trunexa: imx_wm8960_probe_kavita dai_nodename ok\n");
+	
 	if (!asrc_pdev) {
 		data->card.num_links = 1;
+		printk("Trunexa: imx_wm8960_probe_kavita asrc_pdev false\n");
 	} else {
+		printk("Trunexa: imx_wm8960_probe_kavita asrc_pdev true\n");
 		imx_wm8960_dai[1].cpu_of_node = asrc_np;
 		imx_wm8960_dai[1].platform_of_node = asrc_np;
 		imx_wm8960_dai[2].codec_of_node	= codec_np;
@@ -526,13 +561,15 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 			goto fail;
 		}
 
+		printk("Trunexa: imx_wm8960_probe_kavita output rate ok\n");
 		ret = of_property_read_u32(asrc_np, "fsl,asrc-width", &width);
 		if (ret) {
-			dev_err(&pdev->dev, "failed to get output rate\n");
+			dev_err(&pdev->dev, "failed to asrc-width rate\n");
 			ret = -EINVAL;
 			goto fail;
 		}
 
+		printk("Trunexa: imx_wm8960_probe_kavita asrc-width ok\n");
 		if (width == 24)
 			data->asrc_format = SNDRV_PCM_FORMAT_S24_LE;
 		else
@@ -548,6 +585,7 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	data->card.num_dapm_widgets = ARRAY_SIZE(imx_wm8960_dapm_widgets);
 
 	ret = snd_soc_of_parse_audio_routing(&data->card, "audio-routing");
+	printk("Trunexa: imx_wm8960_probe_kavita audio routing =%d\n",ret);
 	if (ret)
 		goto fail;
 
@@ -556,11 +594,13 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, &data->card);
 	snd_soc_card_set_drvdata(&data->card, data);
 	ret = devm_snd_soc_register_card(&pdev->dev, &data->card);
+
 	if (ret) {
 		dev_err(&pdev->dev, "snd_soc_register_card failed (%d)\n", ret);
 		goto fail;
 	}
 
+	printk("Trunexa: imx_wm8960_probe_kavita snd_soc_register_card ok\n");
 	priv->snd_card = data->card.snd_card;
 
 	imx_hp_jack_gpio.gpio = of_get_named_gpio_flags(pdev->dev.of_node,
@@ -580,6 +620,7 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 		if (ret)
 			dev_warn(&pdev->dev, "failed to create headphone jack kctl\n");
 
+		printk("Trunexa: imx_wm8960_probe_kavita HP ok\n");
 		if (priv->is_headset_jack) {
 			imx_hp_jack_pin.mask |= SND_JACK_MICROPHONE;
 			imx_hp_jack_gpio.report |= SND_JACK_MICROPHONE;
@@ -588,8 +629,10 @@ static int imx_wm8960_probe(struct platform_device *pdev)
 		imx_hp_jack_gpio.data = &imx_hp_jack;
 		ret = imx_wm8960_jack_init(&data->card, &imx_hp_jack,
 					   &imx_hp_jack_pin, &imx_hp_jack_gpio);
+		printk("Trunexa: imx_wm8960_probe_kavita Jack init ret =%d\n",ret);
 		if (ret) {
 			dev_warn(&pdev->dev, "hp jack init failed (%d)\n", ret);
+		printk("Trunexa: imx_wm8960_probe_kavita Jack failed\n");
 			goto out;
 		}
 
